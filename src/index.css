@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Custom fade-in and focus effects matching the high-end premium Apple & Linear aesthetics */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aurora-wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-aurora-text {
+  background: linear-gradient(
+    to right,
+    #4F7DFF,
+    #2563EB,
+    #00C2FF,
+    #8B5CF6,
+    #C084FC,
+    #FF7A30,
+    #4F7DFF
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: aurora-wave 10s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom scroll behavior */
+html {
+  scroll-behavior: smooth;
+  background-color: #05070A;
+}
+
+/* Custom horizontal grid dots */
+body {
+  background-color: #05070A;
+  color: #F5F7FA;
+  font-family: var(--font-sans);
+}
