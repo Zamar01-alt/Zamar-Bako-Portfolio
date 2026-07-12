@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowLeft, Mail, Check, X, Sparkles, Target, Clock, 
@@ -42,16 +42,108 @@ const GALLERY_INFO: Record<string, Array<{ title: string; desc: string }>> = {
   ]
 };
 
+const CAROUSEL_TITLES: Record<string, string[]> = {
+  pulse: ["DASHBOARD OVERVIEW", "INCIDENT HISTORY", "SLA SETTINGS", "REPORTING SCREEN"],
+  chopbetta: ["HOMEPAGE", "MENU", "CHECKOUT", "FOOD DETAIL"],
+  waaka: ["EXPLORE", "DISCOVERY", "BOOKING FLOW", "SAVED EXPERIENCES"],
+  wematch: ["DISCOVERY PROFILE", "DISCOVERY FEED", "CHAT INTERFACE", "MATCH SUCCESS"]
+};
+
 export default function CaseStudyDetail({ project, onBack, onNavigateToProject }: CaseStudyDetailProps) {
   const cs = project.caseStudy;
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [isFeaturesModalOpen, setIsFeaturesModalOpen] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScroll = useRef(false);
+
+  const slides = [
+    {
+      title: CAROUSEL_TITLES[project.id]?.[0] || "OVERVIEW",
+      image: project.caseStudy.heroImage
+    },
+    ...(project.caseStudy.visualJourneyImages || []).map((img, idx) => ({
+      title: CAROUSEL_TITLES[project.id]?.[idx + 1] || `STAGE ${idx + 1}`,
+      image: img
+    }))
+  ];
+
+  const navigateToSlide = (idx: number) => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    isProgrammaticScroll.current = true;
+    setActiveImageIdx(idx);
+    
+    container.scrollTo({
+      left: idx * container.clientWidth,
+      behavior: 'smooth'
+    });
+    
+    setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 400);
+  };
+
+  const handleScroll = () => {
+    if (isProgrammaticScroll.current) return;
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const { scrollLeft, clientWidth } = container;
+    if (clientWidth === 0) return;
+    
+    const newIndex = Math.round(scrollLeft / clientWidth);
+    if (newIndex !== activeImageIdx && newIndex >= 0 && newIndex < slides.length) {
+      setActiveImageIdx(newIndex);
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    container.style.scrollSnapType = 'none';
+    container.style.scrollBehavior = 'auto';
+    
+    const startX = e.pageX - container.offsetLeft;
+    const scrollLeft = container.scrollLeft;
+    let currentScrollLeft = scrollLeft;
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const x = moveEvent.pageX - container.offsetLeft;
+      const walk = (x - startX);
+      container.scrollLeft = scrollLeft - walk;
+      currentScrollLeft = container.scrollLeft;
+    };
+    
+    const handleMouseUp = () => {
+      container.style.scrollSnapType = 'x mandatory';
+      container.style.scrollBehavior = 'smooth';
+      
+      const currentIndex = Math.round(currentScrollLeft / container.clientWidth);
+      container.scrollTo({
+        left: currentIndex * container.clientWidth,
+        behavior: 'smooth'
+      });
+      setActiveImageIdx(currentIndex);
+      
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
 
   // Scroll to top when project changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveImageIdx(0);
     setIsFeaturesModalOpen(false);
+    if (containerRef.current) {
+      containerRef.current.scrollLeft = 0;
+    }
   }, [project]);
 
   // Handle ESC key to close modal & body scroll lock
@@ -283,6 +375,181 @@ export default function CaseStudyDetail({ project, onBack, onNavigateToProject }
         </div>
       </section>
 
+      {/* Visual Journey Walkthrough Showcase */}
+      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#05070A] border-t border-white/[0.03]">
+        <style dangerouslySetInnerHTML={{__html: `
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}} />
+        <div className="mx-auto max-w-7xl">
+          
+          <div className="max-w-2xl mb-16 mx-auto text-center">
+            <span className="text-[10px] font-mono font-bold tracking-widest text-[#4F7DFF] uppercase block mb-3">
+              WALKTHROUGH
+            </span>
+            <h2 
+              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-4 font-display"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              Visual Journey.
+            </h2>
+            <p className="text-sm text-[#9CA3AF] font-normal leading-relaxed">
+              {cs.visualJourneyText || 'Explore high-fidelity mockups of key screens and responsive interface states.'}
+            </p>
+          </div>
+
+          {/* Premium Centered Carousel */}
+          <div className="max-w-4xl mx-auto flex flex-col items-center">
+            
+            {/* Carousel display area */}
+            <div className="w-full bg-[#09111F]/30 rounded-3xl border border-white/[0.04] p-4 md:p-8 flex items-center justify-center min-h-[400px] md:min-h-[550px] relative overflow-hidden">
+              
+              {/* Previous Slide button */}
+              <button
+                onClick={() => navigateToSlide(Math.max(0, activeImageIdx - 1))}
+                disabled={activeImageIdx === 0}
+                className="absolute left-4 z-10 p-2.5 rounded-full border border-white/10 bg-[#05070A]/80 text-[#9CA3AF] hover:text-white disabled:opacity-0 transition-all duration-300 hidden md:flex items-center justify-center cursor-pointer"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              {/* Next Slide button */}
+              <button
+                onClick={() => navigateToSlide(Math.min(slides.length - 1, activeImageIdx + 1))}
+                disabled={activeImageIdx === slides.length - 1}
+                className="absolute right-4 z-10 p-2.5 rounded-full border border-white/10 bg-[#05070A]/80 text-[#9CA3AF] hover:text-white disabled:opacity-0 transition-all duration-300 hidden md:flex items-center justify-center cursor-pointer"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+
+              {/* Scroll Container */}
+              <div 
+                ref={containerRef}
+                onMouseDown={handleMouseDown}
+                onScroll={handleScroll}
+                className="w-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar select-none cursor-grab active:cursor-grabbing"
+              >
+                {slides.map((slide, idx) => (
+                  <div 
+                    key={idx} 
+                    className="w-full shrink-0 snap-center flex items-center justify-center"
+                  >
+                    {project.type === 'mobile' ? (
+                      <div 
+                        className={`relative overflow-hidden transition-all duration-500 transform aspect-[9/16] w-full max-w-[280px] md:max-w-[320px] rounded-[36px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] ${slide.image.includes('mockup') ? 'border border-white/10' : 'border-4 border-[#1E293B]'}`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
+                        <img 
+                          src={slide.image} 
+                          alt={slide.title}
+                          className="w-full h-full object-cover select-none pointer-events-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : (slide.image.includes('macbook') || slide.image.includes('hero') || slide.image.includes('mockup')) ? (
+                      <div 
+                        className="relative overflow-hidden transition-all duration-500 transform aspect-[16/10] w-full max-w-[680px] rounded-2xl shadow-2xl border border-white/5"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
+                        <img 
+                          src={slide.image} 
+                          alt={slide.title}
+                          className="w-full h-full object-cover select-none pointer-events-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : (
+                      /* Premium CSS MacBook Pro Mockup Frame */
+                      <div className="w-[84%] md:w-[86%] max-w-[600px] flex flex-col items-center transition-all duration-500">
+                        {/* Screen Body */}
+                        <div className="relative w-full aspect-[16/10] bg-[#0A0D14] rounded-2xl p-[1.8%] pb-[3.2%] border-2 border-[#2D3139] shadow-2xl overflow-hidden flex flex-col">
+                          {/* Inner Bezel line */}
+                          <div className="absolute inset-0 border border-white/5 rounded-2xl pointer-events-none z-10" />
+                          
+                          {/* Screen Camera Notch */}
+                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[14%] h-[3.5%] bg-[#12151C] rounded-b-md flex items-center justify-center z-10">
+                            {/* Camera Lens */}
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#050505] flex items-center justify-center">
+                              <div className="w-0.5 h-0.5 rounded-full bg-[#1A3F66]" />
+                            </div>
+                          </div>
+                          
+                          {/* Screen Display Panel */}
+                          <div className="relative w-full h-full bg-[#05070A] rounded-lg overflow-hidden border border-white/5 shadow-inner">
+                            {/* Glass Reflection Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent pointer-events-none z-10" />
+                            <img 
+                              src={slide.image} 
+                              alt={slide.title}
+                              className="w-full h-full object-cover select-none pointer-events-none"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Laptop Keyboard Base/Lip */}
+                        <div className="relative w-[112%] h-[12px] md:h-[15px] bg-gradient-to-b from-[#3E434D] via-[#2A2E35] to-[#1E2126] border-t border-[#545A66] rounded-b-[10px] shadow-[0_16px_30px_rgba(0,0,0,0.7)] z-20 flex justify-center">
+                          {/* Reflective bottom edge highlight */}
+                          <div className="absolute top-0 inset-x-0 h-[1px] bg-white/20" />
+                          {/* Open Notch / Thumb Indent */}
+                          <div className="w-[12%] h-[60%] bg-[#12151C] rounded-b-[4px] border-b border-white/10" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Premium Indicator Row with layout morph animation */}
+            <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-8 flex-wrap">
+              {slides.map((slide, idx) => {
+                const isActive = idx === activeImageIdx;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => navigateToSlide(idx)}
+                    className="relative flex items-center justify-center focus:outline-none min-h-[40px] px-0.5"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {isActive ? (
+                      <motion.span
+                        layoutId={`active-label-${project.id}-${idx}`}
+                        className="text-[10px] md:text-xs font-mono font-bold tracking-widest uppercase select-none whitespace-nowrap px-4 py-2 rounded-full border border-white/10 bg-white/5"
+                        style={{ color: project.accentHex }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        {slide.title}
+                      </motion.span>
+                    ) : (
+                      <motion.div
+                        layoutId={`active-label-${project.id}-${idx}`}
+                        className="h-2.5 w-2.5 rounded-full bg-white/20 hover:bg-white/50 transition-all duration-200 mx-2.5 cursor-pointer"
+                        initial={{ opacity: 0.5, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
       {/* Technical Foundation Grid */}
       {cs.techFoundation && (
         <section className="px-6 py-20 md:px-12 md:py-28 bg-[#09111F]/30 border-t border-b border-white/[0.04]">
@@ -327,143 +594,6 @@ export default function CaseStudyDetail({ project, onBack, onNavigateToProject }
           </div>
         </section>
       )}
-
-      {/* Visual Journey Walkthrough Showcase */}
-      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#05070A] border-t border-white/[0.03]">
-        <div className="mx-auto max-w-7xl">
-          
-          <div className="max-w-2xl mb-16">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-[#4F7DFF] uppercase block mb-3">
-              WALKTHROUGH
-            </span>
-            <h2 
-              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-4 font-display"
-              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-            >
-              Visual Journey.
-            </h2>
-            <p className="text-sm text-[#9CA3AF] font-normal leading-relaxed">
-              {cs.visualJourneyText || 'Explore high-fidelity mockups of key screens and responsive interface states.'}
-            </p>
-          </div>
-
-          {/* Premium Walkthrough Split Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
-            
-            {/* Interactive Info Controls Panel (4 Columns) */}
-            <div className="lg:col-span-5 flex flex-col justify-between py-2 border-l border-white/5 pl-6 md:pl-8">
-              <div className="space-y-8">
-                {/* Steps indicator */}
-                <div className="flex gap-2">
-                  {cs.visualJourneyImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveImageIdx(idx)}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        idx === activeImageIdx 
-                          ? 'w-10' 
-                          : 'w-2 bg-white/10 hover:bg-white/20'
-                      }`}
-                      style={{ 
-                        backgroundColor: idx === activeImageIdx ? project.accentHex : undefined 
-                      }}
-                      title={`Go to step ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Walkthrough content */}
-                <div>
-                  <span 
-                    className="text-xs font-mono font-bold tracking-widest uppercase block mb-2"
-                    style={{ color: project.accentHex }}
-                  >
-                    STEP 0{activeImageIdx + 1} OF 0{cs.visualJourneyImages.length}
-                  </span>
-                  <h3 className="text-2xl font-sans font-bold text-white mb-4 tracking-tight">
-                    {GALLERY_INFO[project.id]?.[activeImageIdx]?.title || "Product Workspace"}
-                  </h3>
-                  <p className="text-sm text-[#9CA3AF] leading-relaxed font-normal mb-8">
-                    {GALLERY_INFO[project.id]?.[activeImageIdx]?.desc || "High-fidelity presentation showcasing custom-engineered workflows and responsive layout fidelity."}
-                  </p>
-                </div>
-              </div>
-
-              {/* Steps List Thumbnail Controls */}
-              <div className="space-y-4 mt-auto pt-6">
-                <span className="text-[10px] font-mono tracking-wider text-white/40 uppercase block">
-                  Select Screen State
-                </span>
-                <div className="flex flex-col gap-2.5">
-                  {cs.visualJourneyImages.map((img, idx) => {
-                    const info = GALLERY_INFO[project.id]?.[idx];
-                    const isSelected = idx === activeImageIdx;
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveImageIdx(idx)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all duration-300 flex items-center justify-between group ${
-                          isSelected 
-                            ? 'bg-[#101827] border-white/10' 
-                            : 'bg-transparent border-transparent hover:bg-white/[0.02]'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span 
-                            className={`text-xs font-mono font-bold ${
-                              isSelected ? 'text-white' : 'text-[#9CA3AF]'
-                            }`}
-                          >
-                            0{idx + 1}
-                          </span>
-                          <span 
-                            className={`text-xs font-sans font-medium transition-colors ${
-                              isSelected ? 'text-white' : 'text-[#9CA3AF] group-hover:text-white'
-                            }`}
-                          >
-                            {info?.title || `Screen View ${idx + 1}`}
-                          </span>
-                        </div>
-                        <ChevronRight 
-                          className={`h-4 w-4 transition-all duration-300 ${
-                            isSelected 
-                              ? 'opacity-100 translate-x-0' 
-                              : 'opacity-0 -translate-x-2 group-hover:opacity-60 group-hover:translate-x-0'
-                          }`}
-                          style={{ color: isSelected ? project.accentHex : undefined }}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Mockup Frame Canvas (7 Columns) */}
-            <div className="lg:col-span-7 flex items-center justify-center bg-[#09111F]/30 rounded-3xl border border-white/[0.04] p-6 min-h-[400px] md:min-h-[500px]">
-              <div 
-                className={`relative w-full overflow-hidden transition-all duration-500 transform ${
-                  project.type === 'mobile' 
-                    ? 'aspect-[9/16] max-w-[320px] rounded-[36px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border-4 border-[#1E293B]' 
-                    : 'aspect-[16/10] rounded-2xl shadow-2xl border border-white/5'
-                }`}
-              >
-                {/* Background shimmer */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
-                
-                <img 
-                  src={cs.visualJourneyImages[activeImageIdx]} 
-                  alt={GALLERY_INFO[project.id]?.[activeImageIdx]?.title || "Walkthrough image"}
-                  className="w-full h-full object-cover transition-opacity duration-300"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
 
       {/* Outcome Banner */}
       <section className="px-6 py-24 md:px-12 md:py-32 bg-[#09111F]/30 border-t border-b border-white/[0.04] text-center relative overflow-hidden">

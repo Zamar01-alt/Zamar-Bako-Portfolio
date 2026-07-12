@@ -9,28 +9,28 @@ import { Project, Experience, Skill } from './types';
 export const ZAMAR_PHOTO_URL = '/src/assets/images/zamar_portrait.png';
 
 // Pulse Images
-export const PULSE_MOCKUP_URL = '/src/assets/images/pulse_macbook_dashboard_1783782442212.jpg';
-export const PULSE_HISTORY_URL = '/src/assets/images/pulse_history_bento_1783782456086.jpg';
-export const PULSE_SLA_URL = '/src/assets/images/pulse_sla_settings_1783782876397.jpg';
-export const PULSE_REPORT_URL = '/src/assets/images/pulse_noc_reporting_1783782890070.jpg';
+export const PULSE_MOCKUP_URL = '/src/assets/images/pulse_hero_mockup_1783840232190.jpg';
+export const PULSE_HISTORY_URL = '/src/assets/images/pulse_history_mockup_1783840247985.jpg';
+export const PULSE_SLA_URL = '/src/assets/images/pulse_sla_mockup_1783840264776.jpg';
+export const PULSE_REPORT_URL = '/src/assets/images/pulse_reporting_mockup_1783840279037.jpg';
 
 // Chop Betta Images
-export const CHOPBETTA_MOCKUP_URL = '/src/assets/images/chopbetta_web_home_1783782489560.jpg';
-export const CHOPBETTA_MENU_URL = '/src/assets/images/chopbetta_menu_grid_1783782902999.jpg';
-export const CHOPBETTA_CHECKOUT_URL = '/src/assets/images/chopbetta_checkout_1783782914687.jpg';
-export const CHOPBETTA_FOOD_DETAIL_URL = '/src/assets/images/chopbetta_food_detail_1783782988960.jpg';
+export const CHOPBETTA_MOCKUP_URL = '/src/assets/images/chopbetta_hero_mockup_1783841606727.jpg';
+export const CHOPBETTA_MENU_URL = '/src/assets/images/chopbetta_menu_mockup_1783841621220.jpg';
+export const CHOPBETTA_CHECKOUT_URL = '/src/assets/images/chopbetta_checkout_mockup_1783841633902.jpg';
+export const CHOPBETTA_FOOD_DETAIL_URL = '/src/assets/images/chopbetta_food_detail_mockup_1783841644939.jpg';
 
 // Waaka Images
-export const WAAKA_MOCKUP_URL = '/src/assets/images/waaka_sunset_yacht_1783782479381.jpg';
-export const WAAKA_EXPLORE_URL = '/src/assets/images/waaka_explore_screen_1783782931902.jpg';
-export const WAAKA_BOOKING_URL = '/src/assets/images/waaka_booking_flow_1783782944929.jpg';
-export const WAAKA_SAVED_URL = '/src/assets/images/waaka_saved_wallet_1783783003790.jpg';
+export const WAAKA_MOCKUP_URL = '/src/assets/images/waaka_explore_mockup_916_1783841033350.jpg';
+export const WAAKA_EXPLORE_URL = '/src/assets/images/waaka_sunset_mockup_916_1783841050373.jpg';
+export const WAAKA_BOOKING_URL = '/src/assets/images/waaka_booking_mockup_916_1783841066041.jpg';
+export const WAAKA_SAVED_URL = '/src/assets/images/waaka_saved_mockup_916_1783841078422.jpg';
 
 // WeMatch Images
-export const WEMATCH_MOCKUP_URL = '/src/assets/images/wematch_mobile_profile_1783782467152.jpg';
-export const WEMATCH_DISCOVERY_URL = '/src/assets/images/wematch_discovery_feed_1783782958601.jpg';
-export const WEMATCH_CHAT_URL = '/src/assets/images/wematch_chat_interface_1783782969481.jpg';
-export const WEMATCH_SUCCESS_URL = '/src/assets/images/wematch_match_success_1783783017089.jpg';
+export const WEMATCH_MOCKUP_URL = '/src/assets/images/wematch_hero_mockup_1783842303225.jpg';
+export const WEMATCH_DISCOVERY_URL = '/src/assets/images/wematch_discovery_mockup_1783842315446.jpg';
+export const WEMATCH_CHAT_URL = '/src/assets/images/wematch_chat_mockup_1783842347667.jpg';
+export const WEMATCH_SUCCESS_URL = '/src/assets/images/wematch_success_mockup_1783842332715.jpg';
 
 export const PROJECTS: Project[] = [
   {
