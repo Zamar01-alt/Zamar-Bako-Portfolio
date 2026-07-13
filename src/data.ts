@@ -5,32 +5,52 @@
 
 import { Project, Experience, Skill } from './types';
 
-// Image paths are imported or used directly as string variables that match the generated paths
-export const ZAMAR_PHOTO_URL = '/src/assets/images/zamar_portrait.png';
+// Image paths are imported directly as static assets so Vite can resolve them in production builds
+import ZAMAR_PHOTO_URL from './assets/images/zamar_portrait.png';
 
 // Pulse Images
-export const PULSE_MOCKUP_URL = '/src/assets/images/pulse_hero_mockup_1783840232190.jpg';
-export const PULSE_HISTORY_URL = '/src/assets/images/pulse_history_mockup_1783840247985.jpg';
-export const PULSE_SLA_URL = '/src/assets/images/pulse_sla_mockup_1783840264776.jpg';
-export const PULSE_REPORT_URL = '/src/assets/images/pulse_reporting_mockup_1783840279037.jpg';
+import PULSE_MOCKUP_URL from './assets/images/pulse_hero_mockup_1783840232190.jpg';
+import PULSE_HISTORY_URL from './assets/images/pulse_history_mockup_1783840247985.jpg';
+import PULSE_SLA_URL from './assets/images/pulse_sla_mockup_1783840264776.jpg';
+import PULSE_REPORT_URL from './assets/images/pulse_reporting_mockup_1783840279037.jpg';
 
 // Chop Betta Images
-export const CHOPBETTA_MOCKUP_URL = '/src/assets/images/chopbetta_hero_mockup_1783841606727.jpg';
-export const CHOPBETTA_MENU_URL = '/src/assets/images/chopbetta_menu_mockup_1783841621220.jpg';
-export const CHOPBETTA_CHECKOUT_URL = '/src/assets/images/chopbetta_checkout_mockup_1783841633902.jpg';
-export const CHOPBETTA_FOOD_DETAIL_URL = '/src/assets/images/chopbetta_food_detail_mockup_1783841644939.jpg';
+import CHOPBETTA_MOCKUP_URL from './assets/images/chopbetta_hero_mockup_1783841606727.jpg';
+import CHOPBETTA_MENU_URL from './assets/images/chopbetta_menu_mockup_1783841621220.jpg';
+import CHOPBETTA_CHECKOUT_URL from './assets/images/chopbetta_checkout_mockup_1783841633902.jpg';
+import CHOPBETTA_FOOD_DETAIL_URL from './assets/images/chopbetta_food_detail_mockup_1783841644939.jpg';
 
 // Waaka Images
-export const WAAKA_MOCKUP_URL = '/src/assets/images/waaka_explore_mockup_916_1783841033350.jpg';
-export const WAAKA_EXPLORE_URL = '/src/assets/images/waaka_sunset_mockup_916_1783841050373.jpg';
-export const WAAKA_BOOKING_URL = '/src/assets/images/waaka_booking_mockup_916_1783841066041.jpg';
-export const WAAKA_SAVED_URL = '/src/assets/images/waaka_saved_mockup_916_1783841078422.jpg';
+import WAAKA_MOCKUP_URL from './assets/images/waaka_explore_mockup_916_1783841033350.jpg';
+import WAAKA_EXPLORE_URL from './assets/images/waaka_sunset_mockup_916_1783841050373.jpg';
+import WAAKA_BOOKING_URL from './assets/images/waaka_booking_mockup_916_1783841066041.jpg';
+import WAAKA_SAVED_URL from './assets/images/waaka_saved_mockup_916_1783841078422.jpg';
 
 // WeMatch Images
-export const WEMATCH_MOCKUP_URL = '/src/assets/images/wematch_hero_mockup_1783842303225.jpg';
-export const WEMATCH_DISCOVERY_URL = '/src/assets/images/wematch_discovery_mockup_1783842315446.jpg';
-export const WEMATCH_CHAT_URL = '/src/assets/images/wematch_chat_mockup_1783842347667.jpg';
-export const WEMATCH_SUCCESS_URL = '/src/assets/images/wematch_success_mockup_1783842332715.jpg';
+import WEMATCH_MOCKUP_URL from './assets/images/wematch_hero_mockup_1783842303225.jpg';
+import WEMATCH_DISCOVERY_URL from './assets/images/wematch_discovery_mockup_1783842315446.jpg';
+import WEMATCH_CHAT_URL from './assets/images/wematch_chat_mockup_1783842347667.jpg';
+import WEMATCH_SUCCESS_URL from './assets/images/wematch_success_mockup_1783842332715.jpg';
+
+export {
+  ZAMAR_PHOTO_URL,
+  PULSE_MOCKUP_URL,
+  PULSE_HISTORY_URL,
+  PULSE_SLA_URL,
+  PULSE_REPORT_URL,
+  CHOPBETTA_MOCKUP_URL,
+  CHOPBETTA_MENU_URL,
+  CHOPBETTA_CHECKOUT_URL,
+  CHOPBETTA_FOOD_DETAIL_URL,
+  WAAKA_MOCKUP_URL,
+  WAAKA_EXPLORE_URL,
+  WAAKA_BOOKING_URL,
+  WAAKA_SAVED_URL,
+  WEMATCH_MOCKUP_URL,
+  WEMATCH_DISCOVERY_URL,
+  WEMATCH_CHAT_URL,
+  WEMATCH_SUCCESS_URL,
+};
 
 export const PROJECTS: Project[] = [
   {
