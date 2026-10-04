@@ -6,12 +6,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  ArrowLeft, Mail, Check, X, Sparkles, Target, Clock, 
-  Smartphone, Hash, Flame, ShoppingBag, LayoutDashboard, 
-  Sliders, QrCode, Calculator, FileSpreadsheet, ShieldAlert, Users,
-  ChevronLeft, ChevronRight
+  ArrowLeft, 
+  ArrowUpRight,
+  Mail, 
+  Check, 
+  ChevronLeft, 
+  ChevronRight
 } from 'lucide-react';
 import { Project } from '../types';
+import { 
+  MAHRS_PLACE_01,
+  MAHRS_PLACE_02,
+  SOCCER_QUEENS_01,
+  SOCCER_QUEENS_02,
+  SOCCER_QUEENS_03,
+  SOCCER_QUEENS_04,
+  WAAKA_LANDING_01,
+  WAAKA_LANDING_02,
+  WAAKA_LANDING_03,
+  WAAKA_WAITLIST_01,
+  WAAKA_WAITLIST_02,
+  WAAKA_WAITLIST_03,
+  PULSE_MOCKUP_URL,
+  PULSE_HISTORY_URL,
+  PULSE_SLA_URL,
+  PULSE_REPORT_URL,
+  CHOPBETTA_MOCKUP_URL,
+  CHOPBETTA_MENU_URL,
+  CHOPBETTA_CHECKOUT_URL,
+  CHOPBETTA_FOOD_DETAIL_URL,
+  WEMATCH_MOCKUP_URL,
+  WEMATCH_DISCOVERY_URL,
+  WEMATCH_CHAT_URL,
+  WEMATCH_SUCCESS_URL
+} from '../data';
 
 interface CaseStudyDetailProps {
   project: Project;
@@ -19,617 +47,626 @@ interface CaseStudyDetailProps {
   onNavigateToProject: (projectId: string) => void;
 }
 
-const GALLERY_INFO: Record<string, Array<{ title: string; desc: string }>> = {
+interface VisualScreen {
+  name: string;
+  image: string;
+  tagline?: string;
+  description: string;
+  highlights?: string[];
+  isMobileDevice?: boolean;
+}
+
+// Verified real visual journey screens per individual project
+const PROJECT_SCREENS: Record<string, VisualScreen[]> = {
+  waaka: [
+    {
+      name: "Hero Architecture",
+      image: WAAKA_LANDING_01,
+      tagline: "Serene Introduction & Search",
+      description: "Establishes the Calm Abundance brand identity with spacious typography, search preview, and verified zero layout shift."
+    },
+    {
+      name: "Discovery Tracks",
+      image: WAAKA_LANDING_02,
+      tagline: "Culture & Event Itineraries",
+      description: "Responsive multi-column showcase categorizing curated local spaces, city rhythms, and discovery tracks."
+    },
+    {
+      name: "Community Curation",
+      image: WAAKA_LANDING_03,
+      tagline: "Local Ecosystem Gateway",
+      description: "Spacious editorial blocks spotlighting verified local hosts, secret spots, and exclusive urban events."
+    }
+  ],
+  "waaka-waitlist": [
+    {
+      name: "Invitation Entry",
+      image: WAAKA_WAITLIST_01,
+      tagline: "Single-Field Priority Email Capture",
+      description: "Low-friction email entry with instant inline validation, zero layout shift, and tactile submission states.",
+      highlights: [
+        "Minimal single-field email entry reducing cognitive barrier",
+        "Instantaneous tactile button state transition upon submission",
+        "Clean typography affirming brand tier and privacy assurance"
+      ]
+    },
+    {
+      name: "Queue Ticket",
+      image: WAAKA_WAITLIST_02,
+      tagline: "Live Priority Queue Position & Verified Rank",
+      description: "Personalized digital queue ticket card revealing live rank in line and custom viral invite code.",
+      highlights: [
+        "Dynamic digital queue ticket revealing live rank in line",
+        "Unique invite code generator accelerating queue position",
+        "Social referral shortcuts directly integrated (WhatsApp, X, Copy)"
+      ]
+    },
+    {
+      name: "Referral Loops",
+      image: WAAKA_WAITLIST_03,
+      tagline: "Viral Link Acceleration & Social Sharing Loops",
+      description: "Unique personal invitation link that visibly advances queue position with direct WhatsApp and X sharing triggers.",
+      highlights: [
+        "Celebratory confirmation state with spring transition physics",
+        "Verified membership credentials and access milestone badges",
+        "Viral invitation incentives motivating community propagation"
+      ]
+    }
+  ],
+  soccerqueens: [
+    {
+      name: "Platform Overview",
+      image: SOCCER_QUEENS_01,
+      tagline: "Authoritative Digital Home for African Women's Football",
+      description: "Comprehensive editorial coverage, match reporting, player interviews, and platform tournament center."
+    },
+    {
+      name: "Competitions & Tables",
+      image: SOCCER_QUEENS_02,
+      tagline: "Interactive League Tables & Fixtures",
+      description: "Filterable competition standings, fixture tracking, goals scored, and tournament draws."
+    },
+    {
+      name: "Clubs & Rosters",
+      image: SOCCER_QUEENS_03,
+      tagline: "Player Profiles & Club Directories",
+      description: "In-depth squad directories, athlete biographies, international caps, and performance metrics."
+    },
+    {
+      name: "Awards Gala",
+      image: SOCCER_QUEENS_04,
+      tagline: "Annual Gala & Recognition Portal",
+      description: "Prestigious voting and recognition platform honoring outstanding athletic excellence across Nigerian football."
+    }
+  ],
+  mahrs: [
+    {
+      name: "Pitch Hero",
+      image: MAHRS_PLACE_01,
+      tagline: "Cinematic Hero Pitch Presentation",
+      description: "Dramatic full-bleed introduction establishing the recreation ethos, floodlit pitches, and institutional investor narrative."
+    },
+    {
+      name: "Facility Specs",
+      image: MAHRS_PLACE_02,
+      tagline: "Architectural & Astroturf Specifications",
+      description: "Detailed interactive breakdown of astroturf pitch dimensions, floodlighting, hospitality lounge, and reservation platform."
+    }
+  ],
   pulse: [
-    { title: "Incident History Ledger", desc: "Uptime monitoring and downtime reporting with real-time operational clarity." },
-    { title: "SLA Alert Thresholds", desc: "Tracking of service level agreements and threshold alert parameters." },
-    { title: "NOC Analytics & Reports", desc: "Uptime visibility, historical incident awareness, and dashboard visualizations." }
+    {
+      name: "Dashboard Overview",
+      image: PULSE_MOCKUP_URL,
+      tagline: "Unified NOC Control Center",
+      description: "Aggregates real-time service health, live uptime metrics, and overall incident activity in a single high-performance workspace."
+    },
+    {
+      name: "Incident History",
+      image: PULSE_HISTORY_URL,
+      tagline: "Uptime Telemetry & History Ledger",
+      description: "Real-time uptime monitoring and incident ledger providing operational clarity and fast post-incident root cause audits."
+    },
+    {
+      name: "SLA Thresholds",
+      image: PULSE_SLA_URL,
+      tagline: "Automated Compliance & Warning Markers",
+      description: "Automated tracking of service level agreements, warning markers, and contractual uptime parameters before breach thresholds."
+    },
+    {
+      name: "NOC Analytics",
+      image: PULSE_REPORT_URL,
+      tagline: "Historical Telemetry & Network Visualization",
+      description: "Long-term system stability metrics, incident trend analysis, and automated executive reporting."
+    }
   ],
   chopbetta: [
-    { title: "Vibrant Culinary Menu", desc: "Food discovery, browsing, and category filters for customer orders." },
-    { title: "Sleek Sliding Cart", desc: "Integrated shopping drawer that simplifies the checkout flow for pick-up or delivery." },
-    { title: "Sensory Gourmet Explorer", desc: "Detail page highlighting food customization and seamless WhatsApp ordering fulfillment." }
-  ],
-  waaka: [
-    { title: "Curated Vibe Discovery", desc: "Explore and discover curated city experiences built on the Calm Abundance philosophy." },
-    { title: "Seamless Booking Desk", desc: "High-fidelity booking flows and discovery exploration journeys." },
-    { title: "Personalized Saved Wallet", desc: "Saved city experiences and interactive urban travel guides with reduced cognitive load." }
+    {
+      name: "Homepage",
+      image: CHOPBETTA_MOCKUP_URL,
+      tagline: "Sensory Dining & Localized Quick-Start",
+      description: "Captivates users with vivid brand imagery, popular dish highlights, and localized quick-start ordering choices."
+    },
+    {
+      name: "Menu Discovery",
+      image: CHOPBETTA_MENU_URL,
+      tagline: "Categorized Menu & Intuitive Filters",
+      description: "Browse menu items categorized cleanly with intuitive filters, quick-add toggles, and rich nutritional highlights."
+    },
+    {
+      name: "Sliding Cart",
+      image: CHOPBETTA_CHECKOUT_URL,
+      tagline: "Sliding Order Drawer & WhatsApp Checkout",
+      description: "Integrated shopping drawer that simplifies the checkout flow for pick-up, delivery, or automated WhatsApp order routing."
+    },
+    {
+      name: "Food Detail",
+      image: CHOPBETTA_FOOD_DETAIL_URL,
+      tagline: "Gourmet Highlights & Customization",
+      description: "Sensory detail view highlighting food customization, portion controls, and rich gourmet flavor profiles."
+    }
   ],
   wematch: [
-    { title: "Fluid Discovery Feed", desc: "Intent-based matching and personality-first home feed discovery." },
-    { title: "Intimate Chat Flow", desc: "Secure in-app chatting with 24-hour connection rules." },
-    { title: "Interactive Match Success", desc: "Meaningful interactive success screen celebrating shared vibes and communities." }
+    {
+      name: "Discovery Profile",
+      image: WEMATCH_MOCKUP_URL,
+      tagline: "Intent-First Discovery Deck",
+      description: "Primary discovery deck displaying one card at a time with a clear focus on shared communication style and intent.",
+      isMobileDevice: true
+    },
+    {
+      name: "Discovery Feed",
+      image: WEMATCH_DISCOVERY_URL,
+      tagline: "Community Hubs & Vibe Discovery",
+      description: "Fluid discovery feed matching niche comic, nerd, and hobby circles with authentic interest contexts.",
+      isMobileDevice: true
+    },
+    {
+      name: "Intimate Chat",
+      image: WEMATCH_CHAT_URL,
+      tagline: "24-Hour Reply Window & Icebreakers",
+      description: "Elegant, clutter-free message threads with active 24-hour reply countdowns to foster sincere interaction.",
+      isMobileDevice: true
+    },
+    {
+      name: "Match Success",
+      image: WEMATCH_SUCCESS_URL,
+      tagline: "Celebratory Affirmation Screen",
+      description: "Meaningful interactive success screen celebrating shared vibes and mutual communication values.",
+      isMobileDevice: true
+    }
   ]
-};
-
-const CAROUSEL_TITLES: Record<string, string[]> = {
-  pulse: ["DASHBOARD OVERVIEW", "INCIDENT HISTORY", "SLA SETTINGS", "REPORTING SCREEN"],
-  chopbetta: ["HOMEPAGE", "MENU", "CHECKOUT", "FOOD DETAIL"],
-  waaka: ["EXPLORE", "DISCOVERY", "BOOKING FLOW", "SAVED EXPERIENCES"],
-  wematch: ["DISCOVERY PROFILE", "DISCOVERY FEED", "CHAT INTERFACE", "MATCH SUCCESS"]
 };
 
 export default function CaseStudyDetail({ project, onBack, onNavigateToProject }: CaseStudyDetailProps) {
   const cs = project.caseStudy;
-  const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const [isFeaturesModalOpen, setIsFeaturesModalOpen] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isProgrammaticScroll = useRef(false);
+  // Active screen state
+  const [activeScreenIdx, setActiveScreenIdx] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
 
-  const slides = [
+  // Fallback screens if project has custom journey images
+  const defaultScreens: VisualScreen[] = [
     {
-      title: CAROUSEL_TITLES[project.id]?.[0] || "OVERVIEW",
-      image: project.caseStudy.heroImage
+      name: project.title,
+      image: cs.heroImage,
+      description: project.description
     },
-    ...(project.caseStudy.visualJourneyImages || []).map((img, idx) => ({
-      title: CAROUSEL_TITLES[project.id]?.[idx + 1] || `STAGE ${idx + 1}`,
-      image: img
+    ...(cs.visualJourneyImages || []).map((img, idx) => ({
+      name: `View ${idx + 2}`,
+      image: img,
+      description: project.description
     }))
   ];
 
-  const navigateToSlide = (idx: number) => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    isProgrammaticScroll.current = true;
-    setActiveImageIdx(idx);
-    
-    container.scrollTo({
-      left: idx * container.clientWidth,
-      behavior: 'smooth'
-    });
-    
-    setTimeout(() => {
-      isProgrammaticScroll.current = false;
-    }, 400);
-  };
+  const screens: VisualScreen[] = PROJECT_SCREENS[project.id] || defaultScreens;
+  const currentScreen = screens[activeScreenIdx] || screens[0];
 
-  const handleScroll = () => {
-    if (isProgrammaticScroll.current) return;
-    const container = containerRef.current;
-    if (!container) return;
-    
-    const { scrollLeft, clientWidth } = container;
-    if (clientWidth === 0) return;
-    
-    const newIndex = Math.round(scrollLeft / clientWidth);
-    if (newIndex !== activeImageIdx && newIndex >= 0 && newIndex < slides.length) {
-      setActiveImageIdx(newIndex);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    container.style.scrollSnapType = 'none';
-    container.style.scrollBehavior = 'auto';
-    
-    const startX = e.pageX - container.offsetLeft;
-    const scrollLeft = container.scrollLeft;
-    let currentScrollLeft = scrollLeft;
-    
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const x = moveEvent.pageX - container.offsetLeft;
-      const walk = (x - startX);
-      container.scrollLeft = scrollLeft - walk;
-      currentScrollLeft = container.scrollLeft;
-    };
-    
-    const handleMouseUp = () => {
-      container.style.scrollSnapType = 'x mandatory';
-      container.style.scrollBehavior = 'smooth';
-      
-      const currentIndex = Math.round(currentScrollLeft / container.clientWidth);
-      container.scrollTo({
-        left: currentIndex * container.clientWidth,
-        behavior: 'smooth'
-      });
-      setActiveImageIdx(currentIndex);
-      
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // Scroll to top when project changes
+  // Reset to first screen when project changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    setActiveImageIdx(0);
-    setIsFeaturesModalOpen(false);
-    if (containerRef.current) {
-      containerRef.current.scrollLeft = 0;
+    setActiveScreenIdx(0);
+    setSlideDirection(1);
+  }, [project.id]);
+
+  // Screen navigation handlers
+  const handleNext = () => {
+    setSlideDirection(1);
+    setActiveScreenIdx((prev) => (prev + 1) % screens.length);
+  };
+
+  const handlePrev = () => {
+    setSlideDirection(-1);
+    setActiveScreenIdx((prev) => (prev === 0 ? screens.length - 1 : prev - 1));
+  };
+
+  const handleSelectScreen = (idx: number) => {
+    setSlideDirection(idx >= activeScreenIdx ? 1 : -1);
+    setActiveScreenIdx(idx);
+  };
+
+  // Mobile horizontal swipe detection
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 40) {
+      handleNext();
+    } else if (diff < -40) {
+      handlePrev();
     }
-  }, [project]);
-
-  // Handle ESC key to close modal & body scroll lock
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsFeaturesModalOpen(false);
-      }
-    };
-
-    if (isFeaturesModalOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isFeaturesModalOpen]);
-
-  // Icon mapping helper
-  const renderIcon = (iconName: string, accentHex: string) => {
-    const props = { className: 'h-6 w-6', style: { color: accentHex } };
-    switch (iconName) {
-      case 'Calculator': return <Calculator {...props} />;
-      case 'FileSpreadsheet': return <FileSpreadsheet {...props} />;
-      case 'ShieldAlert': return <ShieldAlert {...props} />;
-      case 'Users': return <Users {...props} />;
-      case 'Flame': return <Flame {...props} />;
-      case 'ShoppingBag': return <ShoppingBag {...props} />;
-      case 'LayoutDashboard': return <LayoutDashboard {...props} />;
-      case 'Sparkles': return <Sparkles {...props} />;
-      case 'Sliders': return <Sliders {...props} />;
-      case 'QrCode': return <QrCode {...props} />;
-      case 'Target': return <Target {...props} />;
-      case 'Clock': return <Clock {...props} />;
-      case 'Hash': return <Hash {...props} />;
-      case 'Smartphone': return <Smartphone {...props} />;
-      default: return <Sparkles {...props} />;
-    }
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   return (
     <article className="min-h-screen bg-[#05070A] text-[#F5F7FA]">
       
-      {/* Tiny breadcrumb banner */}
-      <div className="w-full bg-[#09111F]/30 border-b border-white/[0.04] py-3 px-6 md:px-12 text-xs font-mono text-[#9CA3AF]">
-        <div className="mx-auto max-w-7xl flex items-center justify-between">
+      {/* -----------------------------------------------------------------------
+          1. TOP NAVIGATION / BREADCRUMB
+          ----------------------------------------------------------------------- */}
+      <div className="w-full bg-[#09111F]/50 border-b border-white/[0.04] py-3.5 px-6 md:px-12 text-xs font-mono text-[#9CA3AF] sticky top-0 z-30 backdrop-blur-md">
+        <div className="mx-auto max-w-6xl flex items-center justify-between">
           <button 
             onClick={onBack}
-            className="flex items-center gap-2 hover:text-white transition-colors duration-200"
+            className="flex items-center gap-2 hover:text-white transition-colors duration-200 cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Portfolio
           </button>
-          <span className="text-white/30">Case Study: {project.title}</span>
+          <div className="flex items-center gap-2 text-[11px]">
+            <span className="text-white/40 uppercase">{project.category}</span>
+            <span className="text-white/20">•</span>
+            <span className="text-white font-medium">{project.title}</span>
+          </div>
         </div>
       </div>
 
-      {/* Case Study Hero */}
-      <section className="px-6 py-16 md:px-12 md:py-24 text-center relative overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4F7DFF]/5 blur-[120px]" />
-        
-        <div className="mx-auto max-w-4xl">
-          {/* Badge */}
-          <div className="inline-flex items-center rounded-full bg-white/5 px-4 py-1.5 border border-white/10 mb-8 text-[10px] font-mono font-bold tracking-widest text-[#9CA3AF] uppercase">
-            CASE STUDY
+      {/* -----------------------------------------------------------------------
+          2. PROJECT STORY & DETAILS (Spacious, Editorial, Quietly Confident)
+          ----------------------------------------------------------------------- */}
+      <section className="px-6 pt-16 pb-12 md:px-12 md:pt-24 md:pb-16 relative overflow-hidden text-left">
+        <div className="mx-auto max-w-5xl">
+          
+          {/* Metadata Badges */}
+          <div className="flex flex-wrap items-center gap-2.5 mb-6">
+            <span 
+              className="inline-flex items-center rounded-full px-3.5 py-1 text-[10px] font-mono font-bold tracking-widest uppercase border"
+              style={{
+                borderColor: `${project.accentHex}40`,
+                backgroundColor: `${project.accentHex}10`,
+                color: project.accentHex
+              }}
+            >
+              {project.category}
+            </span>
+            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-[10px] font-mono text-white/50">
+              YEAR // {project.year}
+            </span>
+            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-[10px] font-mono text-white/50 uppercase">
+              {project.disciplines.join(' • ')}
+            </span>
           </div>
 
           {/* Title */}
           <h1 
-            className="text-4xl md:text-6xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-6 font-display"
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#F5F7FA] mb-6 font-display"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
           >
-            {cs.heroTitle}
+            {project.title}
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-base md:text-lg text-[#9CA3AF] leading-relaxed max-w-3xl mx-auto mb-16 font-normal">
-            {cs.heroSubtitle}
+          {/* Subtitle / Narrative */}
+          <p className="text-lg md:text-xl text-[#9CA3AF] leading-relaxed max-w-3xl mb-10 font-normal">
+            {project.subtitle || cs.heroSubtitle}
           </p>
 
-          {/* Big Hero Mockup Panel with deep responsive shadow and glow */}
-          <div 
-            className="relative rounded-2xl border border-white/10 p-2 overflow-hidden bg-[#101827] shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
-            style={{ boxShadow: `0 25px 60px -15px ${project.accentHex}1a` }}
-          >
-            <div className="rounded-lg overflow-hidden border border-white/5 bg-black">
-              <img 
-                src={cs.heroImage} 
-                alt={`${project.title} primary view`} 
-                className="w-full h-auto object-cover max-h-[600px]"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Challenge & Solution Section (Two Columns) */}
-      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#09111F]/30 border-t border-b border-white/[0.04]">
-        <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          
-          {/* Left Column: Problem/Challenge */}
-          <div className="flex flex-col justify-start">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-red-400 mb-4 uppercase">
-              <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-              {cs.challengeLabel}
-            </div>
-
-            <h2 
-              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-6 font-display"
-              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+          {/* Zamar's Verified Actual Contribution */}
+          <div className="rounded-2xl border border-white/10 bg-[#09111F]/80 p-6 md:p-8 mb-12">
+            <span 
+              className="text-[10px] font-mono uppercase tracking-widest block font-bold mb-2"
+              style={{ color: project.accentHex }}
             >
-              {cs.challengeTitle || 'The Challenge.'}
-            </h2>
-
-            <p className="text-[#9CA3AF] text-sm md:text-base leading-relaxed mb-8 font-normal">
-              {cs.challengeText}
+              ZAMAR'S VERIFIED ROLE &amp; CRAFT:
+            </span>
+            <p className="text-sm md:text-base text-white/90 leading-relaxed font-normal">
+              {project.description}
             </p>
-
-            {cs.challengePoints && (
-              <ul className="space-y-4">
-                {cs.challengePoints.map((pt, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-400 mt-0.5">
-                      <X className="h-3 w-3" />
-                    </div>
-                    <span className="text-sm text-[#9CA3AF] font-normal leading-relaxed">{pt}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
-          {/* Right Column: Solution */}
-          <div className="flex flex-col justify-start">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-emerald-400 mb-4 uppercase">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              {cs.solutionLabel}
-            </div>
-
-            <h2 
-              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-6 font-display"
-              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-            >
-              {cs.solutionTitle}
-            </h2>
-
-            <p className="text-[#9CA3AF] text-sm md:text-base leading-relaxed mb-8 font-normal">
-              {cs.solutionText}
-            </p>
-
-            {cs.challengePoints2 && (
-              <ul className="space-y-4 mb-8">
-                {cs.challengePoints2.map((pt, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 mt-0.5">
-                      <Check className="h-3 w-3" />
-                    </div>
-                    <span className="text-sm text-[#9CA3AF] font-normal leading-relaxed">{pt}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Metrics Row */}
-            {cs.solutionMetrics && (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {cs.solutionMetrics.map((met, idx) => (
-                  <div key={idx} className="rounded-xl border border-white/5 bg-[#101827] p-6">
-                    <div 
-                      className="text-3xl md:text-4xl font-sans font-bold mb-1 tracking-tight"
+          {/* Verified Project Facets (if defined) */}
+          {project.facets && project.facets.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              {project.facets.map((facet, fIdx) => (
+                <div 
+                  key={fIdx}
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col justify-between"
+                >
+                  <div>
+                    <span 
+                      className="text-[9px] font-mono font-bold tracking-wider uppercase block mb-1"
                       style={{ color: project.accentHex }}
                     >
-                      {met.value}
-                    </div>
-                    <div className="text-[10px] font-mono tracking-wider text-[#9CA3AF] uppercase">
-                      {met.label}
-                    </div>
+                      {facet.role}
+                    </span>
+                    <h4 className="text-sm font-bold text-white font-display mb-1.5">
+                      {facet.label}
+                    </h4>
+                    <p className="text-xs text-[#9CA3AF] leading-relaxed">
+                      {facet.summary}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
-      </section>
-
-      {/* Core Features Grid */}
-      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#05070A]">
-        <div className="mx-auto max-w-7xl">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 
-              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-4 font-display"
-              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-            >
-              {cs.featuresTitle}
-            </h2>
-            <p className="text-sm text-[#9CA3AF] font-normal">
-              {cs.featuresSubtitle}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {cs.features.map((feat, idx) => (
-              <div 
-                key={feat.id}
-                className="group rounded-xl border border-white/[0.06] bg-[#101827] p-8 transition-all duration-300 hover:border-white/10"
-              >
-                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/5 bg-[#05070A]">
-                  {renderIcon(feat.icon, project.accentHex)}
-                </div>
-                
-                <h3 className="text-xl font-sans font-bold text-[#F5F7FA] mb-3">
-                  {feat.title}
-                </h3>
-                
-                <p className="text-xs text-[#9CA3AF] leading-relaxed font-normal">
-                  {feat.description}
-                </p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* Visual Journey Walkthrough Showcase */}
-      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#05070A] border-t border-white/[0.03]">
-        <style dangerouslySetInnerHTML={{__html: `
-          .no-scrollbar::-webkit-scrollbar {
-            display: none;
-          }
-          .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}} />
-        <div className="mx-auto max-w-7xl">
-          
-          <div className="max-w-2xl mb-16 mx-auto text-center">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-[#4F7DFF] uppercase block mb-3">
-              WALKTHROUGH
-            </span>
-            <h2 
-              className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-4 font-display"
-              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-            >
-              Visual Journey.
-            </h2>
-            <p className="text-sm text-[#9CA3AF] font-normal leading-relaxed">
-              {cs.visualJourneyText || 'Explore high-fidelity mockups of key screens and responsive interface states.'}
-            </p>
-          </div>
-
-          {/* Premium Centered Carousel */}
-          <div className="max-w-4xl mx-auto flex flex-col items-center">
-            
-            {/* Carousel display area */}
-            <div className="w-full bg-[#09111F]/30 rounded-3xl border border-white/[0.04] p-4 md:p-8 flex items-center justify-center min-h-[400px] md:min-h-[550px] relative overflow-hidden">
-              
-              {/* Previous Slide button */}
-              <button
-                onClick={() => navigateToSlide(Math.max(0, activeImageIdx - 1))}
-                disabled={activeImageIdx === 0}
-                className="absolute left-4 z-10 p-2.5 rounded-full border border-white/10 bg-[#05070A]/80 text-[#9CA3AF] hover:text-white disabled:opacity-0 transition-all duration-300 hidden md:flex items-center justify-center cursor-pointer"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              
-              {/* Next Slide button */}
-              <button
-                onClick={() => navigateToSlide(Math.min(slides.length - 1, activeImageIdx + 1))}
-                disabled={activeImageIdx === slides.length - 1}
-                className="absolute right-4 z-10 p-2.5 rounded-full border border-white/10 bg-[#05070A]/80 text-[#9CA3AF] hover:text-white disabled:opacity-0 transition-all duration-300 hidden md:flex items-center justify-center cursor-pointer"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-
-              {/* Scroll Container */}
-              <div 
-                ref={containerRef}
-                onMouseDown={handleMouseDown}
-                onScroll={handleScroll}
-                className="w-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar select-none cursor-grab active:cursor-grabbing"
-              >
-                {slides.map((slide, idx) => (
-                  <div 
-                    key={idx} 
-                    className="w-full shrink-0 snap-center flex items-center justify-center"
-                  >
-                    {project.type === 'mobile' ? (
-                      <div 
-                        className={`relative overflow-hidden transition-all duration-500 transform aspect-[9/16] w-full max-w-[280px] md:max-w-[320px] rounded-[36px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] ${slide.image.includes('mockup') ? 'border border-white/10' : 'border-4 border-[#1E293B]'}`}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
-                        <img 
-                          src={slide.image} 
-                          alt={slide.title}
-                          className="w-full h-full object-cover select-none pointer-events-none"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                    ) : (slide.image.includes('macbook') || slide.image.includes('hero') || slide.image.includes('mockup')) ? (
-                      <div 
-                        className="relative overflow-hidden transition-all duration-500 transform aspect-[16/10] w-full max-w-[680px] rounded-2xl shadow-2xl border border-white/5"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
-                        <img 
-                          src={slide.image} 
-                          alt={slide.title}
-                          className="w-full h-full object-cover select-none pointer-events-none"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                    ) : (
-                      /* Premium CSS MacBook Pro Mockup Frame */
-                      <div className="w-[84%] md:w-[86%] max-w-[600px] flex flex-col items-center transition-all duration-500">
-                        {/* Screen Body */}
-                        <div className="relative w-full aspect-[16/10] bg-[#0A0D14] rounded-2xl p-[1.8%] pb-[3.2%] border-2 border-[#2D3139] shadow-2xl overflow-hidden flex flex-col">
-                          {/* Inner Bezel line */}
-                          <div className="absolute inset-0 border border-white/5 rounded-2xl pointer-events-none z-10" />
-                          
-                          {/* Screen Camera Notch */}
-                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[14%] h-[3.5%] bg-[#12151C] rounded-b-md flex items-center justify-center z-10">
-                            {/* Camera Lens */}
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#050505] flex items-center justify-center">
-                              <div className="w-0.5 h-0.5 rounded-full bg-[#1A3F66]" />
-                            </div>
-                          </div>
-                          
-                          {/* Screen Display Panel */}
-                          <div className="relative w-full h-full bg-[#05070A] rounded-lg overflow-hidden border border-white/5 shadow-inner">
-                            {/* Glass Reflection Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent pointer-events-none z-10" />
-                            <img 
-                              src={slide.image} 
-                              alt={slide.title}
-                              className="w-full h-full object-cover select-none pointer-events-none"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                        </div>
-                        
-                        {/* Laptop Keyboard Base/Lip */}
-                        <div className="relative w-[112%] h-[12px] md:h-[15px] bg-gradient-to-b from-[#3E434D] via-[#2A2E35] to-[#1E2126] border-t border-[#545A66] rounded-b-[10px] shadow-[0_16px_30px_rgba(0,0,0,0.7)] z-20 flex justify-center">
-                          {/* Reflective bottom edge highlight */}
-                          <div className="absolute top-0 inset-x-0 h-[1px] bg-white/20" />
-                          {/* Open Notch / Thumb Indent */}
-                          <div className="w-[12%] h-[60%] bg-[#12151C] rounded-b-[4px] border-b border-white/10" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Premium Indicator Row with layout morph animation */}
-            <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-8 flex-wrap">
-              {slides.map((slide, idx) => {
-                const isActive = idx === activeImageIdx;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => navigateToSlide(idx)}
-                    className="relative flex items-center justify-center focus:outline-none min-h-[40px] px-0.5"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {isActive ? (
-                      <motion.span
-                        layoutId={`active-label-${project.id}-${idx}`}
-                        className="text-[10px] md:text-xs font-mono font-bold tracking-widest uppercase select-none whitespace-nowrap px-4 py-2 rounded-full border border-white/10 bg-white/5"
-                        style={{ color: project.accentHex }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                      >
-                        {slide.title}
-                      </motion.span>
-                    ) : (
-                      <motion.div
-                        layoutId={`active-label-${project.id}-${idx}`}
-                        className="h-2.5 w-2.5 rounded-full bg-white/20 hover:bg-white/50 transition-all duration-200 mx-2.5 cursor-pointer"
-                        initial={{ opacity: 0.5, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* Technical Foundation Grid */}
-      {cs.techFoundation && (
-        <section className="px-6 py-20 md:px-12 md:py-28 bg-[#09111F]/30 border-t border-b border-white/[0.04]">
-          <div className="mx-auto max-w-7xl">
-            
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-16">
-              <div>
-                <h2 
-                  className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-3 font-display"
-                  style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-                >
-                  Technical Foundation.
-                </h2>
-                <p className="text-sm text-[#9CA3AF] font-normal max-w-xl">
-                  A robust, scalable architecture built for real-time performance and data privacy.
-                </p>
-              </div>
-              <div className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#9CA3AF]">
-                iOS & Android
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {cs.techFoundation.map((tech) => (
-                <div 
-                  key={tech.id}
-                  className="rounded-xl border border-white/[0.06] bg-[#101827] p-8"
-                >
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-white/40 block mb-4">
-                    {tech.category}
-                  </span>
-                  <h3 className="text-lg font-sans font-bold text-[#F5F7FA] mb-2">
-                    {tech.title}
-                  </h3>
-                  <p className="text-xs text-[#9CA3AF] leading-relaxed font-normal">
-                    {tech.description}
-                  </p>
                 </div>
               ))}
             </div>
+          )}
+
+        </div>
+      </section>
+
+      {/* -----------------------------------------------------------------------
+          3. CONTAINED EDITORIAL IMAGE VIEWER (The Target Visual Journey)
+          Proportion: Contained visual with generous surrounding dark negative space,
+          subtle navigation arrow, and named screen indicator underneath.
+          ----------------------------------------------------------------------- */}
+      <section className="px-4 py-16 sm:px-8 md:px-12 md:py-24 bg-[#05070A] border-t border-white/[0.04] overflow-hidden">
+        <div className="mx-auto max-w-5xl">
+          
+          {/* Section Introduction */}
+          <div className="max-w-2xl mb-10 text-left">
+            <span 
+              className="text-[10px] font-mono font-bold tracking-widest uppercase block mb-2"
+              style={{ color: project.accentHex }}
+            >
+              VISUAL JOURNEY // SCREEN WALKTHROUGH
+            </span>
+            <h2 
+              className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#F5F7FA] mb-2 font-display"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              Entering the Work.
+            </h2>
+            <p className="text-xs sm:text-sm text-[#9CA3AF] leading-relaxed font-normal">
+              {cs.visualJourneyText || 'Interactive editorial walkthrough exploring high-fidelity screens, viewport states, and verified interaction patterns.'}
+            </p>
+          </div>
+
+          {/* ===================================================================
+              CONTAINED EDITORIAL VIEWER ARENA
+              Generous dark negative space surrounding the contained visual.
+              =================================================================== */}
+          <div className="py-6 sm:py-10 md:py-14 flex flex-col items-center justify-center">
+            
+            {/* Visual Frame Wrapper with subtle navigation arrow controls */}
+            <div className="relative flex items-center justify-center w-full">
+
+              {/* Contained Image Frame */}
+              <div 
+                className={`relative overflow-hidden bg-[#09111F]/90 border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.85)] touch-pan-y select-none transition-all duration-300 ${
+                  currentScreen.isMobileDevice
+                    ? 'w-full max-w-[270px] sm:max-w-[290px] aspect-[9/16] max-h-[500px] rounded-[36px]'
+                    : 'w-full max-w-[720px] md:max-w-[780px] lg:max-w-[820px] aspect-[16/10] max-h-[440px] md:max-h-[480px] rounded-2xl sm:rounded-3xl'
+                }`}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Optional Browser Chrome Bar for Waaka Landing */}
+                {project.id === 'waaka' && (
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-[#0A0E17] border-b border-white/10 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded-full bg-red-500/80 inline-block" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80 inline-block" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-green-500/80 inline-block" />
+                    </div>
+                    <div className="px-3 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono text-white/60">
+                      waaka.com
+                    </div>
+                    <div className="text-[9px] font-mono text-rose-400 uppercase font-semibold">
+                      VIEWPORT // {activeScreenIdx + 1}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sliding Horizontal Image View */}
+                <div className={`relative w-full overflow-hidden bg-black ${project.id === 'waaka' ? 'h-[calc(100%-41px)]' : 'h-full'}`}>
+                  <AnimatePresence mode="wait" custom={slideDirection}>
+                    <motion.div
+                      key={currentScreen.image}
+                      custom={slideDirection}
+                      variants={{
+                        enter: (dir: number) => ({
+                          x: dir > 0 ? 35 : -35,
+                          opacity: 0
+                        }),
+                        center: {
+                          x: 0,
+                          opacity: 1
+                        },
+                        exit: (dir: number) => ({
+                          x: dir > 0 ? -35 : 35,
+                          opacity: 0
+                        })
+                      }}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                      className="w-full h-full relative"
+                    >
+                      <img 
+                        src={currentScreen.image} 
+                        alt={currentScreen.name}
+                        className="w-full h-full object-cover object-top select-none pointer-events-none"
+                        referrerPolicy="no-referrer"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Subtle Circular Outlined Navigation Arrow on Desktop (Right) */}
+              <button
+                onClick={handleNext}
+                aria-label="Next screen"
+                className="hidden sm:flex absolute -right-3 md:-right-6 lg:-right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-white/20 bg-[#09111F]/80 hover:bg-white/10 hover:border-white/50 text-white/80 hover:text-white transition-all duration-200 items-center justify-center cursor-pointer shadow-lg backdrop-blur-md focus:outline-none"
+              >
+                <ChevronRight className="w-4 h-4 stroke-[2]" />
+              </button>
+
+              {/* Subtle Circular Outlined Navigation Arrow on Desktop (Left) */}
+              {activeScreenIdx > 0 && (
+                <button
+                  onClick={handlePrev}
+                  aria-label="Previous screen"
+                  className="hidden sm:flex absolute -left-3 md:-left-6 lg:-left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-white/20 bg-[#09111F]/80 hover:bg-white/10 hover:border-white/50 text-white/80 hover:text-white transition-all duration-200 items-center justify-center cursor-pointer shadow-lg backdrop-blur-md focus:outline-none"
+                >
+                  <ChevronLeft className="w-4 h-4 stroke-[2]" />
+                </button>
+              )}
+
+            </div>
+
+            {/* ===================================================================
+                DYNAMIC TRAVELLING NAMED SCREEN-POSITION INDICATOR
+                The active screen name itself occupies the currently active dot's position:
+                Screen 1 active: NAME   •   •   •
+                Screen 2 active: •   NAME   •   •
+                Screen 3 active: •   •   NAME   •
+                Screen 4 active: •   •   •   NAME
+                =================================================================== */}
+            <motion.div 
+              layout
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="flex items-center justify-center gap-3 sm:gap-4 mt-6 sm:mt-8 select-none min-h-[36px]"
+              role="navigation"
+              aria-label="Screen position indicator"
+            >
+              {screens.map((screen, idx) => {
+                const isActive = idx === activeScreenIdx;
+
+                return (
+                  <motion.div 
+                    layout
+                    key={idx}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex items-center justify-center"
+                  >
+                    <AnimatePresence mode="wait" initial={false}>
+                      {isActive ? (
+                        <motion.div
+                          key={`name-${idx}`}
+                          initial={{ opacity: 0, scale: 0.92, filter: 'blur(2px)' }}
+                          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                          exit={{ opacity: 0, scale: 0.92, filter: 'blur(2px)' }}
+                          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                          className="font-mono text-xs sm:text-[13px] font-bold tracking-widest uppercase text-white/95 px-1 sm:px-2 whitespace-nowrap select-none"
+                          style={{ letterSpacing: '0.12em' }}
+                        >
+                          {screen.name}
+                        </motion.div>
+                      ) : (
+                        <motion.button
+                          key={`dot-${idx}`}
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.5 }}
+                          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                          onClick={() => handleSelectScreen(idx)}
+                          aria-label={`Jump to ${screen.name}`}
+                          className="group p-2 flex items-center justify-center cursor-pointer transition-all focus:outline-none"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-white/70 transition-all duration-200" />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+
+            {/* Contextual Editorial Note for Active Screen */}
+            <div className="mt-5 max-w-xl text-center p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+              {currentScreen.tagline && (
+                <span 
+                  className="text-[10px] font-mono font-bold tracking-widest uppercase block mb-1"
+                  style={{ color: project.accentHex }}
+                >
+                  {currentScreen.tagline}
+                </span>
+              )}
+              <p className="text-xs text-[#9CA3AF] leading-relaxed">
+                {currentScreen.description}
+              </p>
+
+              {/* Optional Highlights for waitlist stages */}
+              {currentScreen.highlights && currentScreen.highlights.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-white/[0.04] space-y-1.5 text-left">
+                  {currentScreen.highlights.map((hl, hIdx) => (
+                    <div key={hIdx} className="flex items-start gap-2 text-[11px] text-[#9CA3AF]">
+                      <Check className="h-3 w-3 text-rose-400 shrink-0 mt-0.5" />
+                      <span>{hl}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
           </div>
-        </section>
-      )}
 
-      {/* Outcome Banner */}
-      <section className="px-6 py-24 md:px-12 md:py-32 bg-[#09111F]/30 border-t border-b border-white/[0.04] text-center relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-[#4F7DFF]/2 to-transparent" />
+        </div>
+      </section>
+
+      {/* -----------------------------------------------------------------------
+          4. OUTCOME & NAVIGATION
+          ----------------------------------------------------------------------- */}
+      <section className="px-6 py-20 md:px-12 md:py-28 bg-[#09111F]/30 border-t border-b border-white/[0.04] text-center relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent" />
         
         <div className="mx-auto max-w-3xl">
+          <span 
+            className="text-[10px] font-mono font-bold tracking-widest uppercase block mb-3"
+            style={{ color: project.accentHex }}
+          >
+            {cs.outcomeLabel || 'OUTCOME'}
+          </span>
+
           <h2 
-            className="text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-6 font-display"
+            className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-[#F5F7FA] mb-4 font-display"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
           >
-            {cs.outcomeTitle}
+            {cs.outcomeTitle || 'Built with Purpose & Craft.'}
           </h2>
 
-          <p className="text-[#9CA3AF] text-sm md:text-base leading-relaxed max-w-xl mx-auto mb-12 font-normal">
+          <p className="text-[#9CA3AF] text-sm md:text-base leading-relaxed max-w-xl mx-auto mb-10 font-normal">
             {cs.outcomeText}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a 
               href="mailto:zamarbako99@gmail.com"
-              className="w-full sm:w-auto h-12 px-8 rounded-lg bg-[#4F7DFF] text-xs font-mono font-bold tracking-wider text-white inline-flex items-center justify-center transition-all duration-300 hover:bg-[#3B66E0] hover:shadow-[0_0_15px_rgba(79,125,255,0.3)]"
+              className="w-full sm:w-auto h-12 px-8 rounded-full text-xs font-mono font-bold tracking-wider text-white inline-flex items-center justify-center transition-all duration-300 shadow-lg"
+              style={{
+                backgroundColor: project.accentHex,
+                boxShadow: `0 0 25px ${project.accentHex}40`
+              }}
             >
               <Mail className="h-4 w-4 mr-2" />
-              {cs.outcomeActionLabel}
+              {cs.outcomeActionLabel || "Let's work together"}
             </a>
 
             <button 
-              onClick={() => setIsFeaturesModalOpen(true)}
-              className="w-full sm:w-auto h-12 px-8 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-xs font-mono font-bold tracking-wider text-[#F5F7FA] inline-flex items-center justify-center transition-all duration-300 cursor-pointer"
-            >
-              Designed Features
-            </button>
-
-            <button 
               onClick={onBack}
-              className="w-full sm:w-auto h-12 px-8 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-mono font-bold tracking-wider text-[#F5F7FA]"
+              className="w-full sm:w-auto h-12 px-8 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-mono font-bold tracking-wider text-[#F5F7FA] cursor-pointer transition-colors"
             >
               Back to Portfolio
             </button>
@@ -643,11 +680,11 @@ export default function CaseStudyDetail({ project, onBack, onNavigateToProject }
               </span>
               <button 
                 onClick={() => onNavigateToProject(cs.nextProject!.id)}
-                className="text-xl font-sans font-bold text-white hover:text-[#4F7DFF] transition-colors duration-200 inline-flex items-center gap-1 group font-display"
+                className="text-xl font-sans font-bold text-white hover:text-white/80 transition-colors duration-200 inline-flex items-center gap-1 group font-display cursor-pointer"
                 style={{ fontFamily: '"Space Grotesk", sans-serif' }}
               >
-                {cs.nextProject.title}
-                <ArrowLeft className="h-4 w-4 rotate-180 transition-transform duration-300 group-hover:translate-x-1" />
+                <span>{cs.nextProject.title}</span>
+                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </button>
             </div>
           )}
@@ -655,105 +692,18 @@ export default function CaseStudyDetail({ project, onBack, onNavigateToProject }
         </div>
       </section>
 
-      {/* Footer block */}
+      {/* Footer */}
       <footer className="px-6 py-12 md:px-12 bg-[#05070A]">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono tracking-widest text-[#9CA3AF]/40">
-          <span>BAKO.GZ</span>
-          <span>© 2024 Bako George Zamar. Built with precision.</span>
+        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono tracking-widest text-[#9CA3AF]/40">
+          <span className="font-bold text-white">ZAMAR</span>
+          <span>© 2026 Zamar Bako</span>
           <div className="flex gap-4">
             <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors duration-200">Twitter</a>
             <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors duration-200">LinkedIn</a>
             <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors duration-200">GitHub</a>
-            <a href="https://read.cv" target="_blank" rel="noreferrer" className="hover:text-white transition-colors duration-200">Read.cv</a>
           </div>
         </div>
       </footer>
-
-      {/* Premium Designed Features Modal */}
-      <AnimatePresence>
-        {isFeaturesModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              onClick={() => setIsFeaturesModalOpen(false)}
-              className="absolute inset-0 bg-[#05070A]/85 backdrop-blur-md cursor-pointer"
-            />
-
-            {/* Modal Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 15 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }} // smooth easeOutExpo
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#09111F] p-8 shadow-[0_30px_70px_rgba(0,0,0,0.9)] z-10"
-              style={{ boxShadow: `0 20px 50px -10px ${project.accentHex}2b` }}
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setIsFeaturesModalOpen(false)}
-                className="absolute top-4 right-4 text-[#9CA3AF] hover:text-white transition-colors p-2 rounded-full hover:bg-white/5 cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              {/* Title & Slogan/Category */}
-              <div className="mb-6 pr-6">
-                <span 
-                  className="text-[10px] font-mono font-bold tracking-widest uppercase block mb-2 font-mono"
-                  style={{ color: project.accentHex }}
-                >
-                  {project.category}
-                </span>
-                <h3 
-                  className="text-2xl md:text-3xl font-sans font-bold text-white tracking-tight font-display"
-                  style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-                >
-                  Designed Features
-                </h3>
-                <p className="text-xs text-[#9CA3AF] mt-1.5 font-normal">
-                  High-fidelity interactions and screens crafted specifically for {project.title}.
-                </p>
-              </div>
-
-              {/* Features List */}
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                {cs.designedFeatures?.map((feat, idx) => (
-                  <motion.div 
-                    key={idx}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.04 + 0.1, duration: 0.25 }}
-                    className="flex items-center gap-3 p-3.5 rounded-xl border border-white/[0.04] bg-white/[0.01]"
-                  >
-                    <div 
-                      className="h-2 w-2 rounded-full shrink-0"
-                      style={{ backgroundColor: project.accentHex }}
-                    />
-                    <span className="text-sm text-[#F5F7FA] font-medium leading-none">
-                      {feat}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Close Bottom Action */}
-              <div className="mt-8 pt-4 border-t border-white/5 flex justify-end">
-                <button
-                  onClick={() => setIsFeaturesModalOpen(false)}
-                  className="h-10 px-6 rounded-lg text-xs font-mono font-bold tracking-wider bg-white/5 hover:bg-white/10 text-white transition-all cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </article>
   );

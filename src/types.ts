@@ -3,6 +3,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export type DisciplineId = 'frontend' | 'uiux' | 'graphics' | 'styling' | 'it' | 'model';
+
+export interface Discipline {
+  id: DisciplineId;
+  label: string;
+  pillLabel: string;
+  title: string;
+  tagline: string;
+  quote: string;
+  description: string;
+  visualThemes: string[];
+  evidencePillars: {
+    title: string;
+    description: string;
+  }[];
+  accentHex: string;
+  accentRgb: string;
+}
+
+export interface ProjectFacet {
+  label: string;
+  role: string;
+  summary: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -10,23 +35,25 @@ export interface Project {
   description: string;
   category: string;
   year: string;
-  type: 'desktop' | 'mobile';
+  type: 'desktop' | 'mobile' | 'platform' | 'graphic';
   accentColor: string;
   accentHex: string;
   image: string;
-  caseStudy: CaseStudy;
+  disciplines?: DisciplineId[];
+  facets?: ProjectFacet[];
+  caseStudy?: CaseStudy;
 }
 
 export interface CaseStudy {
   heroTitle: string;
   heroSubtitle: string;
   heroImage: string;
-  challengeTitle?: string; // or Problem
-  challengeLabel: string; // "THE PROBLEM" or "THE CHALLENGE"
+  challengeTitle?: string;
+  challengeLabel: string;
   challengeText: string;
   challengePoints?: string[];
   challengePoints2?: string[];
-  solutionLabel: string; // "THE SOLUTION"
+  solutionLabel: string;
   solutionTitle: string;
   solutionText: string;
   solutionMetrics?: { value: string; label: string }[];
@@ -37,7 +64,7 @@ export interface CaseStudy {
     title: string;
     description: string;
     icon: string;
-    previewElement?: string; // Custom mock visual if needed
+    previewElement?: string;
   }[];
   techFoundation?: {
     id: string;
@@ -56,6 +83,16 @@ export interface CaseStudy {
     id: string;
     title: string;
   };
+}
+
+export interface Venture {
+  id: string;
+  name: string;
+  tagline: string;
+  status: 'COMING SOON';
+  description: string;
+  highlights: string[];
+  accentHex: string;
 }
 
 export interface Experience {

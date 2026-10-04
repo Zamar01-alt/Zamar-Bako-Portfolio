@@ -6,19 +6,19 @@
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Philosophy from './components/Philosophy';
+import Disciplines from './components/Disciplines';
 import SelectedWorks from './components/SelectedWorks';
-import ExperienceSection from './components/Experience';
-import Skills from './components/Skills';
+import Editorial from './components/Editorial';
+import Ventures from './components/Ventures';
 import Contact from './components/Contact';
 import CaseStudyDetail from './components/CaseStudyDetail';
 
-import { PROJECTS, EXPERIENCES, SKILLS } from './data';
+import { PROJECTS } from './data';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('home'); // 'home' or project ID
 
-  // Parse hash routing on mount and hashchange
+  // Parse hash routing on mount, hashchange, and popstate
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
@@ -35,31 +35,54 @@ export default function App() {
     };
 
     window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
     // Initial parse
     handleHashChange();
 
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
     };
   }, []);
 
-  // Update URL hash when selecting a project
+  // Update URL hash and state synchronously when selecting a project
   const handleSelectProject = (projectId: string) => {
-    window.location.hash = `#/project/${projectId}`;
+    setCurrentView(projectId);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    try {
+      const targetHash = `#/project/${projectId}`;
+      if (window.location.hash !== targetHash) {
+        window.history.pushState(null, '', targetHash);
+      }
+    } catch {
+      window.location.hash = `#/project/${projectId}`;
+    }
   };
 
-  // Navigate back to home and clear hash
+  // Navigate back to home, clear hash, and reset state synchronously
   const handleBackToHome = () => {
-    window.location.hash = '';
     setCurrentView('home');
+    try {
+      if (window.location.hash) {
+        window.history.pushState(null, '', window.location.pathname + window.location.search);
+      }
+    } catch {
+      window.location.hash = '';
+    }
+    // Return smoothly to the Works overview
+    setTimeout(() => {
+      const worksSection = document.getElementById('works');
+      if (worksSection) {
+        worksSection.scrollIntoView({ behavior: 'instant' });
+      }
+    }, 20);
   };
 
   // Scroll smoothly to a specific section on the home page
   const handleScrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      // Offset for sticky navbar
-      const yOffset = -70;
+      const yOffset = -70; // offset for sticky navbar
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -70,17 +93,23 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#05070A] text-[#F5F7FA] selection:bg-[#4F7DFF]/20 selection:text-white antialiased font-sans">
       
-      {/* Background elegant grid pattern overlay common in Linear / Apple style websites */}
+      {/* Background delicate grid pattern overlay */}
       <div className="fixed inset-0 pointer-events-none -z-40 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
       {/* Persistent Premium Glass Navbar */}
       <Navbar 
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={(view) => {
+          if (view === 'home') {
+            handleBackToHome();
+          } else {
+            handleSelectProject(view);
+          }
+        }}
         onScrollToSection={handleScrollToSection}
       />
 
-      {/* Main viewport rendering with Framer Motion animations style transition */}
+      {/* Main Viewport */}
       <main className="relative">
         {selectedProject ? (
           <CaseStudyDetail 
@@ -90,25 +119,25 @@ export default function App() {
           />
         ) : (
           <div className="fade-in duration-500 animate-in">
-            {/* Hero Section */}
+            {/* 01. INTERACTIVE GRAVITATIONAL HERO (ZAMAR + Orbiting Work Fragments + Floating Thoughts) */}
             <Hero onScrollToSection={handleScrollToSection} />
 
-            {/* Philosophy Section */}
-            <Philosophy />
+            {/* 02. ONE INSTINCT. SIX EXPRESSIONS. */}
+            <Disciplines />
 
-            {/* Selected Works Bento Grid */}
+            {/* 03. WHAT I'VE MADE */}
             <SelectedWorks 
               projects={PROJECTS}
               onSelectProject={handleSelectProject}
             />
 
-            {/* Experience Section */}
-            <ExperienceSection experiences={EXPERIENCES} />
+            {/* 04. EDITORIAL */}
+            <Editorial />
 
-            {/* Skills Toolstack Badges Section */}
-            <Skills skills={SKILLS} />
+            {/* 05. WHAT I'M BUILDING */}
+            <Ventures />
 
-            {/* Contact Callout Card */}
+            {/* 06. CONTACT */}
             <Contact />
           </div>
         )}
